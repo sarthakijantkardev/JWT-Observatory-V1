@@ -17,4 +17,11 @@ app.get("/", function (req, res) {
   res.send(`running port : ${PORT}`);
 });
 
+app.post("/register", async function (req, res) {
+  let { username, password, email, age } = req.body;
+  let user = await userModel.findOne({ email });
+
+  if (user) { return res.status(400).send("User already registered"); }
+})
+
 app.listen(PORT);
