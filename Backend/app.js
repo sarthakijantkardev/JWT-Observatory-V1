@@ -30,11 +30,12 @@ app.post("/register", async function (req, res) {
 
     let { username, password, email, age } = req.body;
 
-    // Check existing user
     const existingUser = await userModel.findOne({ email });
 
     if (existingUser) {
-      return res.status(400).send("User already registered");
+      return res.status(400).json({
+        message: "User already registered"
+      });
     }
 
     // Hash password
@@ -48,8 +49,15 @@ app.post("/register", async function (req, res) {
       age
     });
 
+    if (!password || !username || !age || !email) {
+
+      return res.status(400).json({
+        message: "Please fill all fields"
+      });
+    }
+
     // JWT Secret
-    const secret = process.env.JWT_TOKEN || "mysecretkey";
+    const secret = process.env.JWT_TOKEN || "gwandumarshhhhh";
 
     // Create Token
     const token = jwt.sign(
@@ -87,9 +95,4 @@ app.post("/register", async function (req, res) {
   }
 });
 
-
-
-// Server Start
-app.listen(PORT, function () {
-  console.log(`Server running on port ${PORT}`);
-});
+app.listen(PORT, function () { console.log(`Server running on port ${PORT}`); });

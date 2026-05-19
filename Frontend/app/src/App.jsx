@@ -9,7 +9,6 @@ function App() {
     age: ""
   });
 
-  // Handle Input Change
   function handleChange(e) {
 
     setFormData({
@@ -18,25 +17,26 @@ function App() {
     });
   }
 
-  // Handle Submit
   async function handleSubmit(e) {
 
     e.preventDefault();
 
     try {
 
-      const response = await fetch("http://localhost:5000/register", {
+      const response = await fetch(
+        "http://localhost:5000/register",
+        {
+          method: "POST",
 
-        method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
 
-        headers: {
-          "Content-Type": "application/json"
-        },
+          credentials: "include",
 
-        credentials: "include",
-
-        body: JSON.stringify(formData)
-      });
+          body: JSON.stringify(formData)
+        }
+      );
 
       const data = await response.json();
 
@@ -53,63 +53,169 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center px-4">
 
-      <div className="w-full max-w-md rounded-3xl p-8 border border-cyan-400/20 bg-gradient-to-br from-[#0b1f24] via-[#102820] to-[#0a1620] shadow-[0_10px_50px_rgba(34,211,238,0.15)]">
+    <div className="min-h-screen bg-black overflow-hidden relative flex items-center justify-center px-4">
 
-        <h1 className="text-3xl font-bold text-center mb-6 bg-gradient-to-r from-cyan-300 to-emerald-300 bg-clip-text text-transparent">
-          Create Account
-        </h1>
+      {/* Soft Glow Background */}
+      <div className="absolute top-[-150px] left-[-150px] w-[500px] h-[500px] bg-cyan-500/20 blur-[120px] rounded-full" />
 
-        <form
-          onSubmit={handleSubmit}
-          className="flex flex-col gap-4"
-        >
+      <div className="absolute bottom-[-180px] right-[-180px] w-[500px] h-[500px] bg-emerald-500/20 blur-[120px] rounded-full" />
 
-          <input
-            type="text"
-            name="username"
-            placeholder="Username"
-            value={formData.username}
-            onChange={handleChange}
-            className="bg-white/5 backdrop-blur-md text-cyan-100 placeholder:text-cyan-200/40 px-4 py-3 rounded-2xl border border-cyan-400/10 outline-none focus:border-emerald-300 transition"
-          />
+      {/* Main Glass Card */}
+      <div
+        className="
+          relative
+          w-full
+          max-w-md
+          p-8
+          rounded-[24px]
+          border
+          border-cyan-400/20
+          bg-white/[0.04]
+          backdrop-blur-3xl
+          shadow-[0_0_80px_rgba(34,211,238,0.12)]
+          overflow-hidden
+        "
+      >
 
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={formData.email}
-            onChange={handleChange}
-            className="bg-white/5 backdrop-blur-md text-cyan-100 placeholder:text-cyan-200/40 px-4 py-3 rounded-2xl border border-cyan-400/10 outline-none focus:border-emerald-300 transition"
-          />
+        {/* Inner Border */}
+        <div className="absolute inset-[1px] rounded-[22px] border border-white/5 pointer-events-none" />
 
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            value={formData.password}
-            onChange={handleChange}
-            className="bg-white/5 backdrop-blur-md text-cyan-100 placeholder:text-cyan-200/40 px-4 py-3 rounded-2xl border border-cyan-400/10 outline-none focus:border-emerald-300 transition"
-          />
+        {/* Top Glow Strip */}
+        <div className="absolute top-0 left-0 h-[2px] w-full bg-gradient-to-r from-transparent via-cyan-300/70 to-transparent" />
 
-          <input
-            type="number"
-            name="age"
-            placeholder="Age"
-            value={formData.age}
-            onChange={handleChange}
-            className="bg-white/5 backdrop-blur-md text-cyan-100 placeholder:text-cyan-200/40 px-4 py-3 rounded-2xl border border-cyan-400/10 outline-none focus:border-emerald-300 transition"
-          />
+        <div className="relative z-10">
 
-          <button
-            type="submit"
-            className="mt-2 py-3 rounded-2xl font-semibold text-black bg-gradient-to-r from-cyan-300 to-emerald-300 hover:scale-[1.02] transition duration-300 shadow-lg shadow-cyan-500/20 cursor-pointer"
+          {/* Heading */}
+          <h1
+            className="
+              text-4xl
+              font-black
+              tracking-tight
+              text-center
+              bg-gradient-to-r
+              from-cyan-200
+              via-white
+              to-emerald-200
+              bg-clip-text
+              text-transparent
+            "
           >
-            Submit
-          </button>
+            JWT Observatory
+          </h1>
 
-        </form>
+          <p className="text-center text-cyan-100/40 mt-2 mb-8 tracking-[3px] text-xs uppercase">
+            Secure Authentication System
+          </p>
+
+          {/* Form */}
+          <form
+            onSubmit={handleSubmit}
+            className="flex flex-col gap-5"
+          >
+
+            {[
+              {
+                type: "text",
+                name: "username",
+                placeholder: "Username"
+              },
+              {
+                type: "email",
+                name: "email",
+                placeholder: "Email"
+              },
+              {
+                type: "password",
+                name: "password",
+                placeholder: "Password"
+              },
+              {
+                type: "number",
+                name: "age",
+                placeholder: "Age"
+              }
+            ].map((field) => (
+
+              <div key={field.name} className="relative group">
+
+                {/* Focus Glow */}
+                <div
+                  className="
+                    absolute
+                    -inset-[1px]
+                    rounded-2xl
+                    bg-gradient-to-r
+                    from-cyan-400/0
+                    via-cyan-400/20
+                    to-emerald-400/0
+                    opacity-0
+                    group-focus-within:opacity-100
+                    blur-sm
+                    transition-all
+                    duration-500
+                  "
+                />
+
+                <input
+                  type={field.type}
+                  name={field.name}
+                  placeholder={field.placeholder}
+                  value={formData[field.name]}
+                  onChange={handleChange}
+                  className="
+                    relative
+                    w-full
+                    px-5
+                    py-4
+                    rounded-2xl
+                    bg-black/30
+                    border
+                    border-white/10
+                    backdrop-blur-2xl
+                    text-cyan-50
+                    placeholder:text-cyan-100/25
+                    outline-none
+                    transition-all
+                    duration-300
+                    focus:border-cyan-300/40
+                    focus:bg-black/40
+                    focus:shadow-[0_0_25px_rgba(34,211,238,0.12)]
+                  "
+                />
+
+              </div>
+            ))}
+
+            {/* Button */}
+            <button
+              type="submit"
+              className="
+                mt-3
+                rounded-2xl
+                py-4
+                font-bold
+                tracking-[2px]
+                uppercase
+                text-cyan-50
+                border
+                border-white/10
+                bg-white/[0.06]
+                backdrop-blur-2xl
+                shadow-[0_0_30px_rgba(34,211,238,0.10)]
+                transition-all
+                duration-300
+                hover:bg-white/[0.08]
+                hover:border-cyan-300/20
+                active:scale-[0.99]
+                hover:cursor-pointer
+              "
+            >
+              Create Account
+            </button>
+
+          </form>
+        </div>
       </div>
     </div>
   );
