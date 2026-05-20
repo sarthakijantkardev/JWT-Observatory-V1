@@ -1,6 +1,9 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function App() {
+
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     username: "",
@@ -44,6 +47,10 @@ function App() {
 
       alert(data.message);
 
+      localStorage.setItem("token", data.token);
+
+      navigate("/dashboard");
+
     } catch (err) {
 
       console.log(err);
@@ -56,12 +63,10 @@ function App() {
 
     <div className="min-h-screen bg-black overflow-hidden relative flex items-center justify-center px-4">
 
-      {/* Soft Glow Background */}
       <div className="absolute top-[-150px] left-[-150px] w-[500px] h-[500px] bg-cyan-500/20 blur-[120px] rounded-full" />
 
       <div className="absolute bottom-[-180px] right-[-180px] w-[500px] h-[500px] bg-emerald-500/20 blur-[120px] rounded-full" />
 
-      {/* Main Glass Card */}
       <div
         className="
           relative
@@ -78,15 +83,12 @@ function App() {
         "
       >
 
-        {/* Inner Border */}
         <div className="absolute inset-[1px] rounded-[22px] border border-white/5 pointer-events-none" />
 
-        {/* Top Glow Strip */}
         <div className="absolute top-0 left-0 h-[2px] w-full bg-gradient-to-r from-transparent via-cyan-300/70 to-transparent" />
 
         <div className="relative z-10">
 
-          {/* Heading */}
           <h1
             className="
               text-4xl
@@ -108,7 +110,6 @@ function App() {
             Secure Authentication System
           </p>
 
-          {/* Form */}
           <form
             onSubmit={handleSubmit}
             className="flex flex-col gap-5"
@@ -139,7 +140,6 @@ function App() {
 
               <div key={field.name} className="relative group">
 
-                {/* Focus Glow */}
                 <div
                   className="
                     absolute
@@ -187,7 +187,6 @@ function App() {
               </div>
             ))}
 
-            {/* Button */}
             <button
               type="submit"
               className="
