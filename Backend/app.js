@@ -11,35 +11,27 @@ const sessionModel = require("./Models/Session");
 const app = express();
 const PORT = 5000;
 
-// Database
 mongoose.connect("mongodb://127.0.0.1:27017/JWT-Obvt-DB-V1");
 
-// Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// CORS
-app.use(cors({
-  origin: "http://localhost:5173",
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true
+  })
+);
 
-// Secret
 const secret = process.env.JWT_TOKEN || "gwandumarshhhhh";
 
-// Home
 app.get("/", function (req, res) {
   res.send(`running port : ${PORT}`);
 });
 
-// ================= REGISTER =================
-
 app.post("/register", async function (req, res) {
-
   try {
-
-    // Observors
     const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
     const device = req.headers["user-agent"];
     const language = req.headers["accept-language"];
@@ -69,16 +61,14 @@ app.post("/register", async function (req, res) {
     const contentLength = req.headers["content-length"];
     const accept = req.headers.accept;
 
-    let { username, password, email, age } = req.body;
+    const { username, password, email, age } = req.body;
 
-    // Validation
-    if (!password || !username || !age || !email) {
+    if (!username || !password || !email || !age) {
       return res.status(400).json({
         message: "Please fill all fields"
       });
     }
 
-    // Existing User
     const existingUser = await userModel.findOne({ email });
 
     if (existingUser) {
@@ -87,10 +77,8 @@ app.post("/register", async function (req, res) {
       });
     }
 
-    // Hash Password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create User
     const user = await userModel.create({
       username,
       password: hashedPassword,
@@ -98,13 +86,12 @@ app.post("/register", async function (req, res) {
       age
     });
 
-    // JWT
     const token = jwt.sign(
       {
         id: user._id,
         email: user.email,
-        device: device,
-        ip: ip
+        device,
+        ip
       },
       secret,
       {
@@ -112,9 +99,7 @@ app.post("/register", async function (req, res) {
       }
     );
 
-    // Session Logs Save
     await sessionModel.create({
-
       userId: user._id,
 
       username,
@@ -150,39 +135,29 @@ app.post("/register", async function (req, res) {
       cacheControl,
       contentLength,
       accept
-
     });
 
-    // Cookie
     res.cookie("token", token, {
       httpOnly: true,
       secure: false,
       sameSite: "strict"
     });
 
-    // Response
     res.status(201).json({
       message: "User registered successfully",
       token
     });
-
   } catch (err) {
-
     console.log(err);
 
     res.status(500).json({
       message: "Server Error"
     });
-
   }
 });
 
-// ================= LOGIN =================
-
 app.post("/login", async function (req, res) {
-
   try {
-
     const { email, password } = req.body;
 
     const user = await userModel.findOne({ email });
@@ -201,11 +176,9 @@ app.post("/login", async function (req, res) {
       });
     }
 
-    // Observors
     const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
     const device = req.headers["user-agent"];
 
-    // Replay Detection
     const existingSession = await sessionModel.findOne({
       userId: user._id,
       ip: { $ne: ip }
@@ -217,7 +190,6 @@ app.post("/login", async function (req, res) {
       replayAttack = true;
     }
 
-    // JWT
     const token = jwt.sign(
       {
         id: user._id,
@@ -231,9 +203,7 @@ app.post("/login", async function (req, res) {
       }
     );
 
-    // Save Session
     await sessionModel.create({
-
       userId: user._id,
 
       username: user.username,
@@ -245,10 +215,8 @@ app.post("/login", async function (req, res) {
       device,
 
       replayAttack
-
     });
 
-    // Cookie
     res.cookie("token", token, {
       httpOnly: true,
       secure: false,
@@ -256,7 +224,6 @@ app.post("/login", async function (req, res) {
     });
 
     res.status(200).json({
-
       message: "Login Success",
 
       replayAttack,
@@ -265,27 +232,18 @@ app.post("/login", async function (req, res) {
         username: user.username,
         email: user.email
       }
-
     });
-
   } catch (err) {
-
     console.log(err);
 
     res.status(500).json({
       message: "Server Error"
     });
-
   }
-
 });
 
-// ================= DASHBOARD DATA =================
-
 app.get("/dashboard", async function (req, res) {
-
   try {
-
     const token = req.cookies.token;
 
     if (!token) {
@@ -296,24 +254,22 @@ app.get("/dashboard", async function (req, res) {
 
     const decoded = jwt.verify(token, secret);
 
-    const sessions = await sessionModel.find({
-      userId: decoded.id
-    }).sort({ timestamp: -1 });
+    const sessions = await sessionModel
+      .find({
+        userId: decoded.id
+      })
+      .sort({ timestamp: -1 });
 
     res.status(200).json({
       sessions
     });
-
   } catch (err) {
-
     console.log(err);
 
     res.status(500).json({
       message: "Server Error"
     });
-
   }
-
 });
 
 app.listen(PORT, function () {

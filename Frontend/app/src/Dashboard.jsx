@@ -78,11 +78,9 @@ function Dashboard() {
                         <p className="text-xs font-medium tracking-wider text-slate-400 uppercase">
                             Total Supervised Traffic
                         </p>
-
                         <h3 className="text-3xl font-bold mt-2 text-white">
                             {loading ? "..." : totalSessions}
                         </h3>
-
                         <p className="text-xs text-slate-500 mt-1">
                             Active cryptographic payloads tracked
                         </p>
